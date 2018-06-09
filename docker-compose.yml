@@ -1,0 +1,14 @@
+version: "2"
+services:
+  base:
+    build: .
+    environment:
+      - PYTHONPATH=.:src
+    volumes:
+      - .:/workspace
+  tests:
+    extends: base
+    build:
+      context: .
+      dockerfile: ./tests/Dockerfile
+
