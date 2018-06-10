@@ -1,9 +1,11 @@
+from basket import Basket
 from kinds import ADD_ITEM, ITEM_ADDED, CHECKOUT, CHECKOUT_STARTED, PAY_ORDER
 
 
 class BasketConsumer:
 
     def __init__(self, events_repository, items_repository):
+        self.events_repository = events_repository
         self.items_repository = items_repository
         self.message_processors = {
             ADD_ITEM: self.process_add_item_command,
@@ -15,6 +17,9 @@ class BasketConsumer:
         if message['kind'] not in self.message_processors:
             return []
 
+        basket_id = message['payload']['basket_id']
+        events = self.events_repository.get_by_basket_id(basket_id)
+        basket = Basket(events)
         process = self.message_processors[message['kind']]
 
         return process(message['payload'])
