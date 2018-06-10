@@ -1,4 +1,5 @@
-from kinds import BASKET_CREATED, ITEM_ADDED, CHECKOUT_STARTED
+from kinds import (
+    BASKET_CREATED, ITEM_ADDED, CHECKOUT_STARTED, PAY_ORDER)
 
 
 class Basket:
@@ -33,3 +34,31 @@ class Basket:
 
     def _rebuild_checkout_started(self, payload):
         self._status = 'checking_out'
+
+    def add_item(self, item_id, name, price):
+        item_added_event = {
+            'kind': ITEM_ADDED,
+            'payload': {
+                'basket_id': self._id,
+                'item_id': item_id,
+                'item_name': name,
+                'item_price': price,
+            }
+        }
+        return [item_added_event]
+
+    def checkout(self):
+        checkout_started_event = {
+            'kind': CHECKOUT_STARTED,
+            'payload': {
+                'basket_id': self._id,
+            }
+        }
+        pay_order_command = {
+            'kind': PAY_ORDER,
+            'payload': {
+                'basket_id': self._id,
+                'total_price': self._total_price,
+            }
+        }
+        return [checkout_started_event, pay_order_command]

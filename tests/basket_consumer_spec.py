@@ -75,6 +75,7 @@ with description('Consumer'):
                 events_repository.get_by_basket_id(ANY_ARG).returns([
                     create_basket_created_event(basket_id),
                     create_item_added_event(basket_id, item_id, item_price),
+                    create_item_added_event(basket_id, item_id, item_price),
                 ])
 
             consumer = BasketConsumer(
@@ -95,7 +96,7 @@ with description('Consumer'):
                     'kind': PAY_ORDER,
                     'payload': {
                         'basket_id': basket_id,
-                        'total_price': item_price,
+                        'total_price': 2*item_price,
                     }
                 }),
             ))
