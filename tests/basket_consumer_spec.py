@@ -9,7 +9,7 @@ from tests.builders import (
     create_item_added_event, create_checkout_command)
 
 
-with description('Consumer'):
+with description('BasketConsumer'):
 
     with it('disregards non related events'):
 
@@ -90,6 +90,9 @@ with description('Consumer'):
                     'kind': CHECKOUT_STARTED,
                     'payload': {
                         'basket_id': basket_id,
+                        'total_price': 2*item_price,
+                        'num_unique_items': 1,
+                        'num_items': 2,
                     }
                 }),
                 have_keys({

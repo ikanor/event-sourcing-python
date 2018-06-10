@@ -19,8 +19,9 @@ class Basket:
 
     def _rebuild(self, events):
         for event in events:
-            rebuilder = self._rebuild_processors[event['kind']]
-            rebuilder(event['payload'])
+            rebuilder = self._rebuild_processors.get(event['kind'])
+            if rebuilder:
+                rebuilder(event['payload'])
 
     def _rebuild_basket_created(self, payload):
         self._id = payload['basket_id']
@@ -52,6 +53,9 @@ class Basket:
             'kind': CHECKOUT_STARTED,
             'payload': {
                 'basket_id': self._id,
+                'total_price': self._total_price,
+                'num_items': len(self._items),
+                'num_unique_items': len({item[0] for item in self._items}),
             }
         }
         pay_order_command = {
