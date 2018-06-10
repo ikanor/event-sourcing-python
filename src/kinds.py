@@ -1,2 +1,5 @@
 ADD_ITEM = 'add_item'
 ITEM_ADDED = 'item_added'
+CHECKOUT = 'checkout'
+CHECKOUT_STARTED = 'checkout_started'
+PAY_ORDER = 'pay_order'

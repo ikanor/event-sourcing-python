@@ -1,17 +1,23 @@
-from kinds import ADD_ITEM, ITEM_ADDED
+from kinds import ADD_ITEM, ITEM_ADDED, CHECKOUT, CHECKOUT_STARTED, PAY_ORDER
 
 
 class BasketConsumer:
 
     def __init__(self, events_repository, items_repository):
         self.items_repository = items_repository
+        self.message_processors = {
+            ADD_ITEM: self.process_add_item_command,
+            CHECKOUT: self.process_checkout_command,
+        }
 
-    def process(self, event):
+    def process(self, message):
 
-        if event['kind'] == ADD_ITEM:
-            return self.process_add_item_command(event['payload'])
-        else:
+        if message['kind'] not in self.message_processors:
             return []
+
+        process = self.message_processors[message['kind']]
+
+        return process(message['payload'])
 
     def process_add_item_command(self, payload):
         basket_id = payload['basket_id']
@@ -27,3 +33,21 @@ class BasketConsumer:
                 'item_price': item['price'],
             }
         }]
+
+    def process_checkout_command(self, payload):
+        basket_id = payload['basket_id']
+
+        checkout_started_event = {
+            'kind': CHECKOUT_STARTED,
+            'payload': {
+                'basket_id': basket_id,
+            }
+        }
+        pay_order_command = {
+            'kind': PAY_ORDER,
+            'payload': {
+                'basket_id': basket_id,
+                'total_price': 9.99,
+            }
+        }
+        return [checkout_started_event, pay_order_command]
